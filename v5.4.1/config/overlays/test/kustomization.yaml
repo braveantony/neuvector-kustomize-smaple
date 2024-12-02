@@ -1,0 +1,39 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- ../../base
+- ./enable-REST-API.yaml
+#- ./nv_master_worker.yaml
+
+images:
+- name: image-registry.openshift-image-registry.svc:5000/neuvector/manager:<version>
+  newName: bastion.ocp4.example.com:8443/neuvector/manager
+  newTag: 5.4.1
+- name: image-registry.openshift-image-registry.svc:5000/neuvector/controller:<version>
+  newName: bastion.ocp4.example.com:8443/neuvector/controller
+  newTag: 5.4.1
+- name: image-registry.openshift-image-registry.svc:5000/neuvector/enforcer:<version>
+  newName: bastion.ocp4.example.com:8443/neuvector/enforcer
+  newTag: 5.4.1
+- name: image-registry.openshift-image-registry.svc:5000/neuvector/scanner:<version>
+  newName: bastion.ocp4.example.com:8443/neuvector/scanner
+  newTag: latest
+- name: image-registry.openshift-image-registry.svc:5000/neuvector/updater:<version>
+  newName: bastion.ocp4.example.com:8443/neuvector/updater
+  newTag: latest
+
+replicas:
+- name: neuvector-controller-pod
+  count: 1
+- name: neuvector-manager-pod
+  count: 1
+- name: neuvector-scanner-pod
+  count: 2
+
+patchesStrategicMerge:
+- enable-persistent-data.yaml
+- node-selector-patch.yaml
+#- resource-limit-patch.yaml
+#- crio-patch.yaml
+#- cert-patch.yaml
+#- enforcer-tolerations-patch.yaml

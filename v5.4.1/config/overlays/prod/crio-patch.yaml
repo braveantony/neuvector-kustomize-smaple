@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: neuvector-enforcer-pod
+  namespace: neuvector
+spec:
+  template:
+    spec:
+      containers:
+        - name: neuvector-enforcer-pod
+          volumeMounts:
+            - mountPath: /run/runtime.sock
+              name: runtime-sock
+              readOnly: true
+      volumes:
+        - name: runtime-sock
+          hostPath:
+            path: /var/run/crio/crio.sock

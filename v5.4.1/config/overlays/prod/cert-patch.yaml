@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: neuvector-manager-pod
+  namespace: neuvector
+spec:
+  template:
+    spec:
+      containers:
+        - name: neuvector-manager-pod
+          volumeMounts:
+          - mountPath: /etc/neuvector/certs/ssl-cert.key
+            name: cert
+            readOnly: true
+            subPath: server.key
+          - mountPath: /etc/neuvector/certs/ssl-cert.pem
+            name: cert
+            readOnly: true
+            subPath: server.crt
+      volumes:
+      - name: cert
+        secret:
+          defaultMode: 420
+          secretName: https-cert
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: neuvector-controller-pod
+  namespace: neuvector
+spec:
+  template:
+    spec:
+      containers:
+        - name: neuvector-controller-pod
+          volumeMounts:
+          - mountPath: /etc/neuvector/certs/ssl-cert.key
+            name: cert
+            readOnly: true
+            subPath: server.key
+          - mountPath: /etc/neuvector/certs/ssl-cert.pem
+            name: cert
+            readOnly: true
+            subPath: server.crt
+      volumes:
+      - name: cert
+        secret:
+          defaultMode: 420
+          secretName: https-cert

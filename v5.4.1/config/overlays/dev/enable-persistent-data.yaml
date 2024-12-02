@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: neuvector-controller-pod
+  namespace: neuvector
+spec:
+  template:
+    spec:
+      containers:
+      - name: neuvector-controller-pod
+        env:
+        - name: CTRL_PERSIST_CONFIG
+          value: "1"
+        volumeMounts:
+        - mountPath: /var/neuvector
+          name: nv-share
+          readOnly: false
+      volumes:
+      - name: nv-share
+        persistentVolumeClaim:
+          claimName: neuvector-data
