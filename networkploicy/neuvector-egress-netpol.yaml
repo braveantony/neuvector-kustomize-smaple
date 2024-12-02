@@ -1,0 +1,42 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: neuvector-egress-netpol
+  namespace: neuvector
+spec:
+  podSelector: {}
+  policyTypes:
+  - Egress
+  egress:
+    # Enable connect to openshift-dns
+    - to:
+      - namespaceSelector:
+          matchLabels:
+            kubernetes.io/metadata.name: "openshift-dns"
+      ports:
+      - protocol: UDP
+        port: 53
+      - protocol: UDP
+        port: 5353
+      - protocol: TCP
+        port: 53
+      - protocol: TCP
+        port: 5353
+    # Enable connect to API Server
+    - to:
+      - ipBlock:
+          cidr: 172.20.0.123/32
+      - ipBlock:
+          cidr: 172.20.0.124/32
+      - ipBlock:
+          cidr: 172.20.0.125/32
+      ports:
+      - protocol: TCP
+        port: 6443
+    # Enable connect to Image Registry
+    - to:
+      - ipBlock:
+          cidr: 172.20.0.121/32
+      ports:
+      - protocol: TCP
+        port: 8443

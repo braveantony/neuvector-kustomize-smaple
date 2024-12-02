@@ -1,0 +1,95 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: neuvector-controller-netpol
+  namespace: neuvector
+spec:
+  podSelector:
+    matchLabels:
+      app: neuvector-controller-pod
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    ports:
+    - protocol: TCP
+      port: 10443
+  - from:
+    - podSelector:
+        matchLabels:
+          app: neuvector-controller-pod
+    ports:
+    - protocol: TCP
+      port: 18300
+    - protocol: TCP
+      port: 18301
+    - protocol: UDP
+      port: 18301
+  - from:
+    - podSelector:
+        matchLabels:
+          app: neuvector-enforcer-pod
+    ports:
+    - protocol: TCP
+      port: 18300
+    - protocol: TCP
+      port: 18301
+    - protocol: UDP
+      port: 18301
+    - protocol: TCP
+      port: 18400
+  - from:
+    - podSelector:
+        matchLabels:
+          app: neuvector-scanner-pod
+    ports:
+    - protocol: TCP
+      port: 18400
+  - from:
+    - podSelector:
+        matchLabels:
+          app: neuvector-updater-pod
+    ports:
+    - protocol: TCP
+      port: 18400
+#  - from:
+#    - podSelector:
+#        matchLabels:
+#          dns.operator.openshift.io/daemonset-dns: default
+#      namespaceSelector:
+#        matchLabels:
+#          kubernetes.io/metadata.name: openshift-dns
+#    ports:
+#    - protocol: UDP
+#      port: 53
+  egress:
+    - to:
+      - podSelector:
+          matchLabels:
+            app: "neuvector-controller-pod"
+      ports:
+      - protocol: TCP
+        port: 18300
+      - protocol: TCP
+        port: 18301
+      - protocol: UDP
+        port: 18301
+    - to:
+      - podSelector:
+          matchLabels:
+            app: "neuvector-enforcer-pod"
+      ports:
+      - protocol: TCP
+        port: 18301
+      - protocol: UDP
+        port: 18301
+      - protocol: TCP
+        port: 18401
+    - to:
+      - podSelector:
+          matchLabels:
+            app: "neuvector-scanner-pod"
+      ports:
+      - protocol: TCP
+        port: 18402

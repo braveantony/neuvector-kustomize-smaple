@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: neuvector-manager-netpol
+  namespace: neuvector
+spec:
+  podSelector:
+    matchLabels:
+      app: neuvector-manager-pod
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    ports:
+    - protocol: TCP
+      port: 8443
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: neuvector-controller-pod 
+    ports:
+    - protocol: TCP
+      port: 10443

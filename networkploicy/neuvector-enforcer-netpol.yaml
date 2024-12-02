@@ -1,0 +1,63 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: neuvector-enforcer-netpol
+  namespace: neuvector
+spec:
+  podSelector:
+    matchLabels:
+      app: neuvector-enforcer-pod
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: neuvector-controller-pod
+    ports:
+    - protocol: TCP
+      port: 18301
+    - protocol: UDP
+      port: 18301
+    - protocol: TCP
+      port: 18401
+  - from:
+    - podSelector:
+        matchLabels:
+          app: neuvector-enforcer-pod
+    ports:
+    - protocol: TCP
+      port: 18301
+    - protocol: UDP
+      port: 18301
+  - from:
+    - podSelector:
+        matchLabels:
+          app: neuvector-scanner-pod
+    ports:
+    - protocol: TCP
+      port: 18401
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: neuvector-controller-pod
+    ports:
+    - protocol: TCP
+      port: 18300
+    - protocol: UDP
+      port: 18301
+    - protocol: TCP
+      port: 18301
+    - protocol: TCP
+      port: 18400
+  - to:
+    - podSelector:
+        matchLabels:
+          app: neuvector-enforcer-pod
+    ports:
+    - protocol: TCP
+      port: 18301
+    - protocol: UDP
+      port: 18301
